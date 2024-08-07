@@ -1,0 +1,32 @@
+name: Daily 60s World
+
+on:
+    schedule:
+        - cron: "0 0 * * *"
+    workflow_dispatch:
+
+jobs:
+    run-scheduled-task:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install pnpm
+              run: |
+                  npm install -g pnpm
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Build and Run
+              run: |
+                  npm run build:ts
+                  npm run build:daily-60s-world
+                  npm run start:daily-60s-world

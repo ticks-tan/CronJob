@@ -1,0 +1,26 @@
+{
+	"name": "cronjob",
+	"version": "1.0.0",
+	"description": "my cron job",
+	"scripts": {
+		"build:ts": "tsc",
+		"build:daily-60s-world": "babel dist/daily60.js --out-dir dist",
+		"start:daily-60s-world": "node dist/daily60.js"
+	},
+	"author": "Ticks",
+	"packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf",
+	"devDependencies": {
+		"@babel/cli": "^7.24.8",
+		"@babel/core": "^7.25.2",
+		"@babel/plugin-transform-modules-commonjs": "^7.24.8",
+		"@babel/preset-env": "^7.25.3",
+		"@babel/preset-typescript": "^7.24.7",
+		"@types/node": "^22.1.0",
+		"tslint": "^6.1.3",
+		"typescript": "^5.5.4"
+	},
+	"dependencies": {
+		"axios": "^1.7.3",
+		"dotenv": "^16.4.5"
+	}
+}
