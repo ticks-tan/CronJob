@@ -27,8 +27,8 @@ jobs:
 
             - name: Build and Run
               env:
-                - NOTIFY_TOKEN: ${{ secrets.NOTIFY_TOKEN }}
-                - NOTIFY_URL: ${{ secrets.NOTIFY_URL }}
+                  NOTIFY_TOKEN: ${{ secrets.NOTIFY_TOKEN }}
+                  NOTIFY_URL: ${{ secrets.NOTIFY_URL }}
               run: |
                   npm run build:ts
                   npm run build:daily-60s-world
