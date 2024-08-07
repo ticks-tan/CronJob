@@ -3,7 +3,7 @@ import { env } from "process";
 import dotenv from "dotenv";
 dotenv.config();
 
-const notify_url = env.NOTIFY_URL!;
+const notify_url = process.env.NOTIFY_URL!;
 
 console.log(notify_url);
 
@@ -21,7 +21,7 @@ export async function PushMessage(body: NotifyBody) {
 	try {
 		const resp = await axios.post(notify_url, body, {
 			headers: {
-				Authorization: env.NOTIFY_TOKEN!,
+				Authorization: process.env.NOTIFY_TOKEN!,
 				"Content-Type": "application/json",
 			},
 		});
