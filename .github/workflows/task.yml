@@ -1,0 +1,44 @@
+name: Check New Rss
+
+on:
+    schedule:
+        - cron: "0 0 1 1 *"
+    workflow_dispatch:
+        inputs:
+            task:
+                description: "Run Task Target"
+                required: true
+                type: string
+
+jobs:
+    run-scheduled-task:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install pnpm
+              run: |
+                  npm install -g pnpm
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Build and Run
+              env:
+                  NOTIFY_TOKEN: ${{ secrets.NOTIFY_TOKEN }}
+                  NOTIFY_URL: ${{ secrets.NOTIFY_URL }}
+                  RSS_URLS: ${{ secrets.RSS_URLS }}
+                  CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+                  CF_KV_ID: ${{ secrets.CF_KV_ID }}
+                  CF_KV_API_KEY: ${{ secrets.CF_KV_API_KEY }}
+              run: |
+                  npm run build:ts
+                  npm run build:${{ github.event.inputs.task }}
+                  npm run start:${{ github.event.inputs.task }}
