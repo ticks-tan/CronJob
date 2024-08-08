@@ -1,4 +1,4 @@
-name: Daily 60s World
+name: Check New Rss
 
 on:
     schedule:
@@ -29,7 +29,11 @@ jobs:
               env:
                   NOTIFY_TOKEN: ${{ secrets.NOTIFY_TOKEN }}
                   NOTIFY_URL: ${{ secrets.NOTIFY_URL }}
+                  RSS_URLS: ${{ secrets.RSS_URLS }}
+                  CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+                  CF_KV_ID: ${{ secrets.CF_KV_ID }}
+                  CF_KV_API_KEY: ${{ secrets.CF_KV_API_KEY }}
               run: |
                   npm run build:ts
-                  npm run build:daily-60s-world
-                  npm run start:daily-60s-world
+                  npm run build:check-rss
+                  npm run start:check-rss

@@ -1,11 +1,8 @@
 import axios from "axios";
-import { env } from "process";
 import dotenv from "dotenv";
 dotenv.config();
 
 const notify_url = process.env.NOTIFY_URL!;
-
-console.log(notify_url);
 
 export type NotifyBody = {
 	title?: string;
@@ -33,7 +30,7 @@ export async function PushMessage(body: NotifyBody) {
 			return true;
 		}
 	} catch (error) {
-		console.log("PushMessage error: ", error);
+		console.log(`PushMessage error: ${error}`);
 	}
 	return false;
 }
