@@ -27,14 +27,15 @@ async function FetchDaily60World() {
 		if (resp.status == 200) {
 			const body: Daily60WorldResp = resp.data;
 			if (body.code == 200) {
-				let content = "# 每天 60s 读懂世界";
+				let content = "";
 				for (const txt of body.data.text) {
-					content += "\n\n" + txt;
+					content += txt + "\n\n";
 				}
 				if (
 					await PushMessage({
 						title: "每天 60s 读懂世界",
-						content: content,
+						body: content,
+						format: "markdown",
 					})
 				) {
 					console.log("Push [Daily 60s World] Message Success!");

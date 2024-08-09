@@ -67,8 +67,8 @@ async function CheckRSSIsNew(url: string, rss_list: RSSResp) {
 			if (
 				await PushMessage({
 					title: titl,
-					content: `# ${titl}\n\n> ${rss.title}\n\n${rss.description}\n\n[阅读原文](${rss.link})`,
-					url: rss.link,
+					body: `> ${rss.title}\n\n${rss.description}\n\n[阅读原文](${rss.link})`,
+					format: "markdown",
 				})
 			) {
 				console.log("Push RSS Message Success!");

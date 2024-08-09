@@ -30,7 +30,8 @@ jobs:
 
             - name: Build and Run
               env:
-                  NOTIFY_TOKEN: ${{ secrets.NOTIFY_TOKEN }}
+                  NOTIFY_AUTH_USER: ${{ secrets.NOTIFY_AUTH_USER }}
+                  NOTIFY_AUTH_PWD: ${{ secrets.NOTIFY_AUTH_PWD }}
                   NOTIFY_URL: ${{ secrets.NOTIFY_URL }}
                   RSS_URLS: ${{ secrets.RSS_URLS }}
                   CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
