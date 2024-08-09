@@ -21,7 +21,34 @@ type RSSResp = {
 	}[];
 };
 
-const rss_urls = process.env.RSS_URLS.split(",").map((v) => v.trim());
+type RSSListItem = {
+	url: string;
+	tag: string;
+};
+
+const rss_urls: RSSListItem[] = [
+	{
+		url: "https://rsshub.app/qqorw/mrzb",
+		tag: "wecom_bot",
+	},
+	{
+		url: "https://rsshub.app/huanqiu/news/world",
+		tag: "wecom_bot",
+	},
+	{
+		url: "https://rsshub.app/dockerhub/build/deluan/navidrome",
+		tag: "wecom_bot",
+	},
+	{
+		url: "https://rsshub.app/dockerhub/build/vaultwarden/server",
+		tag: "wecom_bot",
+	},
+	{
+		url: "https://rsshub.app/dockerhub/build/teddysun/xray",
+		tag: "wecom_bot",
+	},
+];
+
 const rss_parser = new Parser();
 const turndownService = new TurndownService();
 
@@ -42,9 +69,6 @@ async function fetchRss(url: string) {
 					pubDate: Date.parse(it.pubDate || "0"),
 				});
 			}
-			rss_list.items.sort((a, b) => {
-				return a.pubDate - b.pubDate;
-			});
 			return rss_list;
 		}
 	} catch (e) {
@@ -53,8 +77,8 @@ async function fetchRss(url: string) {
 	return null;
 }
 
-async function CheckRSSIsNew(url: string, rss_list: RSSResp) {
-	const url_encode = Buffer.from(url).toString("base64");
+async function CheckRSSIsNew(item: RSSListItem, rss_list: RSSResp) {
+	const url_encode = Buffer.from(item.url).toString("base64");
 	for (const rss of rss_list.items) {
 		let cacheData = 0;
 		const cacheDataStr = await ReadKV(url_encode);
@@ -69,6 +93,7 @@ async function CheckRSSIsNew(url: string, rss_list: RSSResp) {
 					title: titl,
 					body: `> ${rss.title}\n\n${rss.description}\n\n[阅读原文](${rss.link})`,
 					format: "markdown",
+					tag: item.tag,
 				})
 			) {
 				console.log("Push RSS Message Success!");
@@ -81,11 +106,11 @@ async function CheckRSSIsNew(url: string, rss_list: RSSResp) {
 }
 
 (async () => {
-	for (const url of rss_urls) {
+	for (const item of rss_urls) {
 		try {
-			const rss_list = await fetchRss(url);
+			const rss_list = await fetchRss(item.url);
 			if (rss_list != null) {
-				await CheckRSSIsNew(url, rss_list);
+				await CheckRSSIsNew(item, rss_list);
 			}
 		} catch (e) {
 			console.warn("Check rss publish error!");
