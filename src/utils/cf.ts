@@ -6,9 +6,9 @@ import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
 
-const account_id = process.env.CF_ACCOUNT_ID;
-const namespace_id = process.env.CF_KV_ID;
-const api_key = `Bearer ${process.env.CF_KV_API_KEY}`;
+const account_id = process.env.CF_ACCOUNT_ID!;
+const namespace_id = process.env.CF_KV_ID!;
+const api_key = `Bearer ${process.env.CF_KV_API_KEY!}`;
 
 export async function ReadKV(key: string) {
 	const api_url = `https://api.cloudflare.com/client/v4/accounts/${account_id}/storage/kv/namespaces/${namespace_id}/values/${key}`;

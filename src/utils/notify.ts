@@ -26,8 +26,10 @@ export async function PushMessage(opt: NotifyBody) {
 				password: process.env.NOTIFY_AUTH_PWD!,
 			},
 		});
-		if (resp.status == 200 && resp.data.error && resp.data.error === null) {
-			return true;
+		if (resp.status == 200) {
+			if (resp.data.error === null) {
+				return true;
+			}
 		}
 	} catch (error) {
 		if (axios.isAxiosError(error)) {

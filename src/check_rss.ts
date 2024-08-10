@@ -37,15 +37,15 @@ const rss_urls: RSSListItem[] = [
 	},
 	{
 		url: "https://rsshub.app/dockerhub/build/deluan/navidrome",
-		tag: "wecom_bot",
+		tag: "tg_ntfy_bot",
 	},
 	{
 		url: "https://rsshub.app/dockerhub/build/vaultwarden/server",
-		tag: "wecom_bot",
+		tag: "tg_ntfy_bot",
 	},
 	{
 		url: "https://rsshub.app/dockerhub/build/teddysun/xray",
-		tag: "wecom_bot",
+		tag: "tg_ntfy_bot",
 	},
 ];
 
@@ -92,7 +92,7 @@ async function CheckRSSIsNew(item: RSSListItem, rss_list: RSSResp) {
 				await PushMessage({
 					title: titl,
 					body: `> ${rss.title}\n\n${rss.description}\n\n[阅读原文](${rss.link})`,
-					format: "markdown",
+					format: "text",
 					tag: item.tag,
 				})
 			) {
