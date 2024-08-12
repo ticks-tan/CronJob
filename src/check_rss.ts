@@ -55,14 +55,14 @@ const rss_urls: RSSListItem[] = [
 const rss_parser = new Parser();
 const turndownService = new TurndownService();
 
-let check_rss_cfg: CheckRssCfg;
+let check_rss_cfg: CheckRssCfg = {};
 
 async function initCfg() {
 	let fail_count = 0;
-	let cfg_str = "";
+	let cfg_str = "{}";
 	for (; fail_count < 3; ++fail_count) {
 		try {
-			cfg_str = (await ReadKV("check_rss_cfg")) || "";
+			cfg_str = (await ReadKV("check_rss_cfg")) || "{}";
 			if (cfg_str != "") {
 				break;
 			}
