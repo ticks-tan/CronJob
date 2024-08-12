@@ -24,33 +24,77 @@ type RSSResp = {
 type RSSListItem = {
 	url: string;
 	tag: string;
+	format: "text" | "markdown" | "html";
 };
+
+type CheckRssCfg = Record<string, number>;
 
 const rss_urls: RSSListItem[] = [
 	{
-		url: "https://rsshub.app/qqorw/mrzb",
-		tag: "wecom_bot",
-	},
-	{
-		url: "https://rsshub.app/huanqiu/news/world",
-		tag: "wecom_bot",
+		url: "https://rsshub.app/epicgames/freegames/zh-CN",
+		tag: "tg_ntfy_bot",
+		format: "text",
 	},
 	{
 		url: "https://rsshub.app/dockerhub/build/deluan/navidrome",
 		tag: "tg_ntfy_bot",
+		format: "text",
 	},
 	{
 		url: "https://rsshub.app/dockerhub/build/vaultwarden/server",
 		tag: "tg_ntfy_bot",
+		format: "text",
 	},
 	{
 		url: "https://rsshub.app/dockerhub/build/teddysun/xray",
 		tag: "tg_ntfy_bot",
+		format: "text",
 	},
 ];
 
 const rss_parser = new Parser();
 const turndownService = new TurndownService();
+
+let check_rss_cfg: CheckRssCfg;
+
+async function initCfg() {
+	let fail_count = 0;
+	let cfg_str = "";
+	for (; fail_count < 3; ++fail_count) {
+		try {
+			cfg_str = (await ReadKV("check_rss_cfg")) || "";
+			if (cfg_str != "") {
+				break;
+			}
+		} catch (e) {
+			console.warn(`Get check_rss_cfg error: ${e}`);
+		}
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+	}
+	try {
+		check_rss_cfg = JSON.parse(cfg_str);
+		return true;
+	} catch (e) {
+		console.warn(`parse check_rss_cfg to JSON error: ${e}`);
+	}
+	return false;
+}
+
+async function saveCfg() {
+	let fail_count = 0;
+	const cfg = JSON.stringify(check_rss_cfg);
+	for (; fail_count < 3; ++fail_count) {
+		try {
+			const resp = await WriteKV("check_rss_cfg", cfg);
+			if (resp) {
+				break;
+			}
+		} catch (e) {
+			console.warn(`Save check_rss_cfg [${cfg}] error: ${e}`);
+		}
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+	}
+}
 
 async function fetchRss(url: string) {
 	try {
@@ -69,6 +113,7 @@ async function fetchRss(url: string) {
 					pubDate: Date.parse(it.pubDate || "0"),
 				});
 			}
+			rss_list.items.sort((a, b) => a.pubDate - b.pubDate);
 			return rss_list;
 		}
 	} catch (e) {
@@ -80,24 +125,19 @@ async function fetchRss(url: string) {
 async function CheckRSSIsNew(item: RSSListItem, rss_list: RSSResp) {
 	const url_encode = Buffer.from(item.url).toString("base64");
 	for (const rss of rss_list.items) {
-		let cacheData = 0;
-		const cacheDataStr = await ReadKV(url_encode);
-		if (cacheDataStr != null) {
-			cacheData = Date.parse(cacheDataStr);
-		}
+		let cacheData = check_rss_cfg[url_encode] ?? 0;
 		if (cacheData < rss.pubDate) {
-			cacheData = rss.pubDate;
+			check_rss_cfg[url_encode] = rss.pubDate;
 			const titl = `RSS订阅更新 (${rss_list.title})`;
 			if (
 				await PushMessage({
 					title: titl,
 					body: `> ${rss.title}\n\n${rss.description}\n\n[阅读原文](${rss.link})`,
-					format: "text",
+					format: item.format,
 					tag: item.tag,
 				})
 			) {
 				console.log("Push RSS Message Success!");
-				await WriteKV(url_encode, cacheData.toString());
 			} else {
 				console.warn("Push RSS Message error!");
 			}
@@ -106,6 +146,10 @@ async function CheckRSSIsNew(item: RSSListItem, rss_list: RSSResp) {
 }
 
 (async () => {
+	const status = await initCfg();
+	if (!status) {
+		check_rss_cfg = {};
+	}
 	for (const item of rss_urls) {
 		try {
 			const rss_list = await fetchRss(item.url);
@@ -116,4 +160,5 @@ async function CheckRSSIsNew(item: RSSListItem, rss_list: RSSResp) {
 			console.warn("Check rss publish error!");
 		}
 	}
+	await saveCfg();
 })();
