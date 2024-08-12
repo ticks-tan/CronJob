@@ -62,8 +62,9 @@ async function initCfg() {
 	let cfg_str = "{}";
 	for (; fail_count < 3; ++fail_count) {
 		try {
-			cfg_str = (await ReadKV("check_rss_cfg")) || "{}";
-			if (cfg_str != "") {
+			const a = await ReadKV("check_rss_cfg");
+			if (a != null) {
+				cfg_str = typeof a === "string" ? a : JSON.stringify(a);
 				break;
 			}
 		} catch (e) {
@@ -72,6 +73,7 @@ async function initCfg() {
 		await new Promise((resolve) => setTimeout(resolve, 2000));
 	}
 	try {
+		console.log("cfg_str: ", cfg_str);
 		check_rss_cfg = JSON.parse(cfg_str);
 		return true;
 	} catch (e) {
@@ -83,6 +85,7 @@ async function initCfg() {
 async function saveCfg() {
 	let fail_count = 0;
 	const cfg = JSON.stringify(check_rss_cfg);
+	console.log(`save cfg to KV: ${cfg}`);
 	for (; fail_count < 3; ++fail_count) {
 		try {
 			const resp = await WriteKV("check_rss_cfg", cfg);
